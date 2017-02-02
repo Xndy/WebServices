@@ -52,6 +52,8 @@ public class Crd1temp implements Serializable {
     @Column(name = "U_GAD_DATECREA")
     @Temporal(TemporalType.TIMESTAMP)
     private Date uGadDatecrea;
+    @Column(name = "U_GAD_UPGPSANDROID", columnDefinition="ntext")
+    private String uGadUpgpsandroid;
     
     public Crd1temp() {
     }
@@ -137,6 +139,14 @@ public class Crd1temp implements Serializable {
 
 	public void setuGadDatecrea(Date uGadDatecrea) {
 		this.uGadDatecrea = uGadDatecrea;
+	}
+
+	public String getuGadUpgpsandroid() {
+		return uGadUpgpsandroid;
+	}
+
+	public void setuGadUpgpsandroid(String uGadUpgpsandroid) {
+		this.uGadUpgpsandroid = uGadUpgpsandroid;
 	}
 
 	

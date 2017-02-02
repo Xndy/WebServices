@@ -17,7 +17,7 @@ import com.gaderesa.repository.Crd1Repository;
 public class Crd1Controller {
 	
 	 @Autowired
-	 private Crd1Repository crd1Repository;
+	 private  Crd1Repository crd1Repository;
 /*
 	 @RequestMapping(value = "/clientes/{card_code}/sucursal", method = RequestMethod.POST, headers="Accept=application/xml, application/json")
 	 public  @ResponseBody ResponseEntity<?> save(@RequestBody Crd1 crd1){
@@ -49,6 +49,19 @@ public class Crd1Controller {
 		 return new ResponseEntity<>(findSucursalByClient.getContent(), HttpStatus.OK);
 	   }
 	 
+
+	 @RequestMapping(value = "/clientes/sucursal",method = RequestMethod.GET)
+	   public ResponseEntity<?> getClientbyDocnum(@RequestParam(value="docnum", required=true) Integer docnum ){ 
+		 Integer exists = crd1Repository.existManifest(docnum);                             
+		  if(exists == 0){
+			  return new ResponseEntity<> (exists, HttpStatus.ACCEPTED);
+		  }
+		  else {
+			  Crd1temp findSucurSalByDocnum = crd1Repository.getClientbyDocnum(docnum);  
+				 return new ResponseEntity<>(findSucurSalByDocnum, HttpStatus.OK);		 
+		  }
+	   }
+	 
 	 
 	 /*Metadata
 	  * @Transactional(readOnly=true)
@@ -68,22 +81,37 @@ public class Crd1Controller {
 	 
 	 
 	 @RequestMapping (value = "/clientes/clientsucur",method = RequestMethod.POST)
-	    public ResponseEntity<?> updateCrd1Offline(@RequestBody Crd1temp crd1){
-		  Integer exists = crd1Repository.existManifest(Integer.parseInt(crd1.getCardCode()));                             
-		 //crd1Repository.updateCrd1(crd1.getAddress(), crd1.getCardCode(), crd1.getStreet(), crd1.getGlblLocNum() );
-		  
-		  if(exists == 0){
-			  boolean x = true;
-			  return new ResponseEntity<> (x, HttpStatus.ACCEPTED);
-		  }
-		  else {
-			  crd1Repository.saveUpdateOffline(Integer.parseInt(crd1.getCardCode()), crd1.getGlblLocNum());
-			  return new ResponseEntity<>(HttpStatus.OK);
-		  }
-		  
-	    }
-	 
-	 
-	 
-	 
+	    public ResponseEntity<?> updateCrd1Offline(final @RequestBody Crd1temp crd1){	  
+			  try{
+				  Crd1temp c = new Crd1temp();
+				  Crd1temp findSucurSalByDocnumUpdateAndroid;
+				  Integer exists = crd1Repository.existManifest(Integer.parseInt(crd1.getCardCode()));    
+				  if(exists == 0){
+					  c.setCounty("0");
+					  return new ResponseEntity<> (c, HttpStatus.ACCEPTED);
+				  } else 
+					 {
+					  findSucurSalByDocnumUpdateAndroid = crd1Repository.getClientbyDocnumUpdateAndroid(Integer.parseInt(crd1.getCardCode()));
+					  if(findSucurSalByDocnumUpdateAndroid.getuGadUpgpsandroid().equals("SI")){ 
+						  System.out.println("VALORES: " + crd1.getCardCode());
+						  c.setCounty("SI");
+						  return new ResponseEntity<> (c, HttpStatus.ACCEPTED);
+					  }else
+						  if(!findSucurSalByDocnumUpdateAndroid.getuGadUpgpsandroid().equals("SI")){
+							  crd1Repository.saveUpdateOffline(Integer.parseInt(crd1.getCardCode()), crd1.getGlblLocNum());
+							  return new ResponseEntity<>(HttpStatus.OK);
+						  }
+					  }
+			  }catch (Exception e) {
+				  System.out.println("ERROR: " + e.toString() + "valores gps: " + crd1.getCardCode() +" " + crd1.getGlblLocNum());
+				  
+				  crd1Repository.saveUpdateOffline(Integer.parseInt(crd1.getCardCode()), crd1.getGlblLocNum());
+				  return new ResponseEntity<>(HttpStatus.OK);
+				  //return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			  }
+
+			  return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	  
+	 }
+		   
 }

@@ -16,6 +16,7 @@ public interface OslpRepository extends PagingAndSortingRepository<Oslp, Integer
 	@Query(value="select new com.gaderesa.domain.Oslp(o.slpCode, o.slpName, o.memo, o.userId) from Oslp o where o.slpName=?1 and  o.password=?2 ")
 	public Oslp login(String slp_name,String password);
 	
+	
 	public Oslp findBySlpName(String slpName);
 	
 	
